@@ -28,7 +28,8 @@ const TrendChart = ({ keyword }) => {
     async function fetchPosts() {
       let res = await fetch(
         "http://localhost:3000/api/googletrend/interest-over-time?keyword=" +
-          keyword
+          keyword,
+        { next: { revalidate: 300 } }
       );
       if (!res.ok) {
         throw new Error(`Error: ${res.status} - ${res.statusText}`);
