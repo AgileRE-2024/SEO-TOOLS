@@ -13,72 +13,88 @@ export default function SignUp() {
     confirm: "",
   });
 
-  const submit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const enteredData = Object.fromEntries(formData.entries());
+  // Fungsi validasi
+  const validateForm = (data) => {
+    const errors = {
+      userName: "",
+      email: "",
+      password: "",
+      confirm: "",
+    };
 
-    const { userName, email, password, confirmPassword } = enteredData;
+    const { userName, email, password, confirmPassword } = data;
 
     // Validasi nama
     if (!userName) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        userName: "Name is required",
-      }));
+      errors.userName = "Name is required";
     } else if (userName.length < 3 || userName.length > 50) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        userName: "Name must be between 3 and 50 characters long",
-      }));
-    } else {
-      setErrorMessage((prev) => ({ ...prev, userName: "" }));
+      errors.userName = "Name must be between 3 and 50 characters long";
     }
 
     // Validasi email
     if (!email) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        email: "Email is required",
-      }));
+      errors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        email: "Invalid email format",
-      }));
-    } else {
-      setErrorMessage((prev) => ({ ...prev, email: "" }));
+      errors.email = "Invalid email format";
     }
 
     // Validasi password
     if (password.length < 6) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        password: "Password must be at least 6 characters long",
-      }));
-    } else {
-      setErrorMessage((prev) => ({ ...prev, password: "" }));
+      errors.password = "Password must be at least 6 characters long";
     }
 
     // Validasi confirm password
     if (password !== confirmPassword) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        confirm: "Passwords do not match",
-      }));
-    } else {
-      setErrorMessage((prev) => ({ ...prev, confirm: "" }));
+      errors.confirm = "Passwords do not match";
     }
 
-    // Cek apakah ada error
-    if (
-      !errorMessage.userName &&
-      !errorMessage.email &&
-      !errorMessage.password &&
-      !errorMessage.confirm
-    ) {
-      console.log("Form data: ", enteredData);
-      // Lakukan proses submit data (misalnya navigasi atau API call)
+    return errors;
+  };
+
+  // Fungsi submit
+  const submit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const enteredData = Object.fromEntries(formData.entries());
+
+    // Validasi data
+    const errors = validateForm(enteredData);
+    setErrorMessage(errors);
+
+    // Jika ada error, hentikan proses
+    if (Object.values(errors).some((err) => err)) return;
+
+    // Kirim data ke API
+    try {
+      const { userName, email, password } = enteredData;
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userName,
+          email,
+          password,
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        console.log("Sign up successful", result);
+        // Navigasi atau beri feedback ke pengguna
+      } else {
+        setErrorMessage((prev) => ({
+          ...prev,
+          email: result.message || "Something went wrong",
+        }));
+      }
+    } catch (error) {
+      console.error("Error during sign up:", error);
+      setErrorMessage((prev) => ({
+        ...prev,
+        email: "Failed to sign up. Please try again later.",
+      }));
     }
   };
 
