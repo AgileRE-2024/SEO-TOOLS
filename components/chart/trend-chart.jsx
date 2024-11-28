@@ -27,7 +27,7 @@ const TrendChart = ({ keyword }) => {
   useEffect(() => {
     async function fetchPosts() {
       let res = await fetch(
-        "http://localhost:3000/api/googletrend/interest-over-time?keyword=" +
+        `${process.env.URL}/api/googletrend/interest-over-time?keyword=` +
           keyword,
         { next: { revalidate: 300 } }
       );

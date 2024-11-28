@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import TrendsTitle from "@/components/trends-keyword/trends-title";
 
 export default async function Dashboard() {
-  let trendsData = await fetch("http://localhost:3000/api/googletrend/daily", {
+  let trendsData = await fetch(process.env.URL + "/api/googletrend/daily", {
     next: { revalidate: 300 },
   });
   let trendsJson = await trendsData.json();

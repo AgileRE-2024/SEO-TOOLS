@@ -73,7 +73,7 @@ export default function SignUp() {
     setIsSigningUp(true);
     try {
       const { userName, email, password } = enteredData;
-      const response = await fetch("/api/auth/signup", {
+      const response = await fetch(`${process.env.URL}/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
