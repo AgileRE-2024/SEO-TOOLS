@@ -1,6 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
+import {
+  Sidebar,
+  SidebarBody,
+  SidebarItem,
+  SidebarLink,
+} from "@/components/ui/sidebar";
 import {
   IconAnalyzeFilled,
   IconArrowLeft,
@@ -13,7 +18,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function DashboardSideBar() {
   const path = usePathname();
@@ -32,24 +37,12 @@ export default function DashboardSideBar() {
         <IconHistory className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-    {
-      label: "Settings",
-      href: "/dashboard/settings",
-      icon: (
-        <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: "Logout",
-      href: "#",
-      icon: (
-        <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
   ];
   const [open, setOpen] = useState(false);
 
   const { data: session } = useSession();
+
+  console.log(session);
   return (
     <Sidebar open={open} setOpen={setOpen} animate={true}>
       <SidebarBody className="justify-between gap-10">
@@ -67,22 +60,29 @@ export default function DashboardSideBar() {
                 }
               />
             ))}
+            {session && (
+              <SidebarItem
+                onClick={() => signOut()}
+                key={"logout"}
+                item={{
+                  label: "Logout",
+                  icon: (
+                    <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                  ),
+                }}
+                className={" px-1 cursor-pointer"}
+              />
+            )}
           </div>
         </div>
         <div>
           {session ? (
             <SidebarLink
               link={{
-                label: "Manu Arora",
+                label: `${session.user.name}`,
                 href: "#",
                 icon: (
-                  <Image
-                    src="https://assets.aceternity.com/manu.png"
-                    className="h-7 w-7 flex-shrink-0 rounded-full"
-                    width={50}
-                    height={50}
-                    alt="Avatar"
-                  />
+                  <IconUserFilled color="green" className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
                 ),
               }}
             />
@@ -91,7 +91,9 @@ export default function DashboardSideBar() {
               link={{
                 label: "Sign in",
                 href: "/login",
-                icon: <IconUserFilled className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0"  />,
+                icon: (
+                  <IconUserFilled className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                ),
               }}
             />
           )}

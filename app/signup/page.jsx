@@ -1,11 +1,16 @@
 "use client";
 
 import MainButton from "@/components/buttons/main-button";
+import { useRouter } from "nextjs-toploader/app";
 import FormInput from "@/components/form/FormInput";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function SignUp() {
+  const router = useRouter(); // Initialize useRouter
+
+  const [isSigningUp, setIsSigningUp] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState({
     userName: "",
     email: "",
@@ -65,6 +70,7 @@ export default function SignUp() {
     if (Object.values(errors).some((err) => err)) return;
 
     // Kirim data ke API
+    setIsSigningUp(true);
     try {
       const { userName, email, password } = enteredData;
       const response = await fetch("/api/auth/signup", {
@@ -80,8 +86,10 @@ export default function SignUp() {
       });
 
       const result = await response.json();
+      setIsSigningUp(false);
+
       if (response.ok) {
-        console.log("Sign up successful", result);
+        router.push("/login");
         // Navigasi atau beri feedback ke pengguna
       } else {
         setErrorMessage((prev) => ({
@@ -90,6 +98,8 @@ export default function SignUp() {
         }));
       }
     } catch (error) {
+      setIsSigningUp(false);
+
       console.error("Error during sign up:", error);
       setErrorMessage((prev) => ({
         ...prev,
@@ -140,13 +150,25 @@ export default function SignUp() {
             isError={!!errorMessage.confirm}
             errorMessage={errorMessage.confirm}
           />
-          <MainButton
-            classes="w-full font-bold"
-            layoutId="login-button"
-            style={{ originY: "0px" }}
-          >
-            Sign Up
-          </MainButton>
+          {isSigningUp ? (
+            <MainButton
+              classes="w-full font-normal opacity-50"
+              layoutId="login-button"
+              style={{ originY: "0px" }}
+              disabled
+            >
+              Loading...
+            </MainButton>
+          ) : (
+            <MainButton
+              classes="w-full font-bold"
+              layoutId="login-button"
+              style={{ originY: "0px" }}
+            >
+              Sign Up
+            </MainButton>
+          )}
+
           <p className="text-white font-light">
             Already have an account?{" "}
             <Link href="login">

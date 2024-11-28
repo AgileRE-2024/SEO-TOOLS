@@ -7,6 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      animation: {
+        spin: "spin 1s linear infinite",
+        "spin-slow": "spin 2s linear infinite",
+      },
       colors: {
         custom: {
           teal: "#36BFB1",
@@ -18,5 +22,4 @@ module.exports = {
       },
     },
   },
-
 };

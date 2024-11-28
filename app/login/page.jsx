@@ -1,57 +1,93 @@
 "use client";
 
+import { useRouter } from "nextjs-toploader/app";
 import MainButton from "@/components/buttons/main-button";
 import FormInput from "@/components/form/FormInput";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function Login() {
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState({
     email: "",
     password: "",
   });
 
-  const submit = (event) => {
+  const router = useRouter(); // Initialize useRouter
+
+  const submit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const enteredData = Object.fromEntries(formData.entries());
 
     const { email, password } = enteredData;
 
-    // Validasi email
+    // Validasi email dan password di frontend
+    let hasError = false;
     if (!email) {
       setErrorMessage((prev) => ({
         ...prev,
         email: "Email is required",
       }));
+      hasError = true;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setErrorMessage((prev) => ({
         ...prev,
         email: "Invalid email format",
       }));
+      hasError = true;
     } else {
       setErrorMessage((prev) => ({ ...prev, email: "" }));
     }
 
-    // Validasi password
     if (!password) {
       setErrorMessage((prev) => ({
         ...prev,
         password: "Password is required",
       }));
+      hasError = true;
     } else if (password.length < 6) {
       setErrorMessage((prev) => ({
         ...prev,
         password: "Password must be at least 6 characters long",
       }));
+      hasError = true;
     } else {
       setErrorMessage((prev) => ({ ...prev, password: "" }));
     }
 
-    // Cek apakah ada error
-    if (!errorMessage.email && !errorMessage.password) {
-      console.log("Form data: ", enteredData);
-      // Lakukan proses login (misalnya navigasi atau API call)
+    if (hasError) return;
+    setIsLoggingIn(true);
+    // Kirim data ke backend melalui signIn
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+    setIsLoggingIn(false);
+    if (!result.ok) {
+      // Tangkap error dari backend dan update state errorMessage
+      if (result.error === "User with this email does not exist.") {
+        setErrorMessage((prev) => ({
+          ...prev,
+          email: "User with this email does not exist.",
+        }));
+      } else if (result.error === "Invalid password.") {
+        setErrorMessage((prev) => ({
+          ...prev,
+          password: "Invalid password.",
+        }));
+      } else {
+        setErrorMessage((prev) => ({
+          email: "",
+          password: "Authentication failed. Please try again.",
+        }));
+      }
+    } else {
+      // Redirect to /dashboard on successful login
+      router.push("/dashboard");
     }
   };
 
@@ -80,13 +116,24 @@ export default function Login() {
             isError={!!errorMessage.password}
             errorMessage={errorMessage.password}
           />
-          <MainButton
-            classes="w-full font-bold"
-            layoutId="login-button"
-            style={{ originY: "0px" }}
-          >
-            Login
-          </MainButton>
+          {isLoggingIn ? (
+            <MainButton
+              classes="w-full font-normal opacity-50"
+              layoutId="login-button"
+              style={{ originY: "0px" }}
+              disabled
+            >
+              Loading...
+            </MainButton>
+          ) : (
+            <MainButton
+              classes="w-full font-bold"
+              layoutId="login-button"
+              style={{ originY: "0px" }}
+            >
+              Login
+            </MainButton>
+          )}
           <p className="text-white font-light">
             Don't have an account?{" "}
             <Link href="signup">
