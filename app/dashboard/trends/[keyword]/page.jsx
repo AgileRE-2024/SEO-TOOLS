@@ -30,6 +30,7 @@ export default async function Analyse({ params }) {
   const keywordData = await relatedKeywordResponse.json();
   const geoMapDataFull = await geoMapResponse.json();
   const geoMapData = geoMapDataFull.default.geoMapData;
+  console.log(keywordData)
 
   const dataForNetworkGraph = convertToNodePairs(keywordData);
   const countKeywordDepth = countKeywords(keywordData);
