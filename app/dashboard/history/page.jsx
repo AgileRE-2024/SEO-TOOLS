@@ -30,20 +30,25 @@ export default async function History() {
 
       // Konversi data dari database ke dalam format `trends`
       if (userHistory && userHistory.keywords) {
-        const dateFormatter = new Intl.DateTimeFormat("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        });
-
-        trends = userHistory.keywords.map((keyword) => ({
-          title: { query: keyword.keyword },
-          accessedAt: dateFormatter.format(new Date(keyword.accessedAt)),
-        }));
+        trends = userHistory.keywords
+          .map((keyword) => ({
+            title: { query: keyword.keyword },
+            accessedAt: keyword.accessedAt, // Simpan dalam bentuk asli untuk sorting
+          }))
+          .sort((a, b) => new Date(b.accessedAt) - new Date(a.accessedAt)) // Sorting dari terbaru ke terlama
+          .map((keyword) => ({
+            ...keyword,
+            accessedAt: new Intl.DateTimeFormat("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            }).format(new Date(keyword.accessedAt)), // Format ulang untuk tampilan
+          }));
       }
+
     }
   } catch (error) {
     console.error("Error fetching trends from database:", error);
