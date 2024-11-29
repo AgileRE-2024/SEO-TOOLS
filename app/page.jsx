@@ -3,8 +3,10 @@ import MainButton from "@/components/buttons/main-button";
 import ReverseButton from "@/components/buttons/reverse-button";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 export default function Home() {
+  const { data: session } = useSession();
   const words = [
     {
       text: "Smarter",
@@ -34,16 +36,29 @@ export default function Home() {
           </p>
           <TypewriterEffectSmooth words={words} className="" />
           <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 font-bold">
-            <Link href="login">
-              <MainButton  style={{ originY: "0px" }}>
-                Login
-              </MainButton>
-            </Link>
-            <Link href="signup">
-              <ReverseButton>Signup</ReverseButton>
-            </Link>
+            {session ? (
+              <Link href="/dashboard">
+                <MainButton style={{ originY: "0px" }}>Get Started</MainButton>
+              </Link>
+            ) : (
+              <>
+                <Link href="login">
+                  <MainButton style={{ originY: "0px" }}>Login</MainButton>
+                </Link>
+                <Link href="signup">
+                  <ReverseButton>Signup</ReverseButton>
+                </Link>
+              </>
+            )}
           </div>
-            <Link href="/dashboard" className="text-custom-darkTeal opacity-60 underline mt-[1rem]">Start without logging in</Link>
+          {!session && (
+            <Link
+              href="/dashboard"
+              className="text-custom-darkTeal opacity-60 underline mt-[1rem]"
+            >
+              Start without logging in
+            </Link>
+          )}
         </div>
       </BackgroundBeamsWithCollision>
     </main>

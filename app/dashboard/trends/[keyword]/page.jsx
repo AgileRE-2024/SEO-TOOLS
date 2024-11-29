@@ -1,8 +1,13 @@
+"use server";
 import IndonesiaMap from "@/components/chart/indo-map";
 import NetworkGraph from "@/components/chart/network-graph";
 import Table from "@/components/chart/table";
+import { authOptions } from "@/lib/authOptions";
+import { connectToDB } from "@/lib/db";
 import { convertToNodePairs } from "@/lib/utils/convertToNodePairs";
 import { countKeywords } from "@/lib/utils/countKeyword";
+import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth";
 
 export default async function Page({ params }) {
   const keyword = decodeURIComponent(params.keyword);
@@ -20,6 +25,44 @@ export default async function Page({ params }) {
 
   const dataForNetworkGraph = convertToNodePairs(keywordData);
   const countKeywordDepth = countKeywords(keywordData);
+
+  const session = await getServerSession(authOptions);
+
+  // Save history
+  if (session) {
+    const userId = new ObjectId(session.user.id); // Pastikan userId menjadi ObjectId
+
+    const client = await connectToDB();
+    const db = client.db("SEOBoost");
+    const usersCollection = db.collection("users");
+
+    // Pastikan user dan struktur dokumen ada
+    await usersCollection.updateOne(
+      { _id: userId }, // Cari user berdasarkan ID
+      { $setOnInsert: { keywords: [] } }, // Jika user belum ada, buat dokumen baru dengan keywords kosong
+      { upsert: true } // Gunakan upsert untuk memastikan dokumen dibuat jika belum ada
+    );
+
+    // Cek apakah keyword sudah ada di dalam array keywords
+    const keywordExists = await usersCollection.findOne({
+      _id: userId,
+      "keywords.keyword": keyword,
+    });
+
+    if (keywordExists) {
+      // Jika keyword sudah ada, perbarui accessedAt
+      await usersCollection.updateOne(
+        { _id: userId, "keywords.keyword": keyword },
+        { $set: { "keywords.$.accessedAt": new Date() } }
+      );
+    } else {
+      // Jika keyword belum ada, tambahkan ke array keywords
+      await usersCollection.updateOne(
+        { _id: userId },
+        { $push: { keywords: { keyword, accessedAt: new Date() } } }
+      );
+    }
+  }
 
   return (
     <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-700 bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full overflow-auto">

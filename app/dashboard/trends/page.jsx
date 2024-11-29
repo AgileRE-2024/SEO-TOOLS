@@ -40,7 +40,7 @@ export default async function Dashboard() {
                       "px-4 py-6 hover:cursor-pointer flex flex-col justify-between"
                     }
                   >
-                    <h2 className="text-white text-xl font-bold">
+                    <h2 className="text-white text-xl font-bold line-clamp-2 overflow-clip">
                       {trend.title.query}
                     </h2>
                     <TrendChart keyword={trend.title.query}></TrendChart>
