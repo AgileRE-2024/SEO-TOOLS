@@ -1,54 +1,25 @@
 "use server";
+
 import TrendChart from "@/components/chart/trend-chart";
 import TrendsContainer from "@/components/dashboard/trends-container";
 import Link from "next/link";
 import TrendsInput from "@/components/trends-keyword/trends-input";
 import TrendsTitle from "@/components/trends-keyword/trends-title";
-import { connectToDB } from "@/lib/db";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
-import { ObjectId } from "mongodb";
+import { getUserHistory } from "@/lib/services/userService";
+import { formatTrends } from "@/lib/helpers/formatTrends";
 
 export default async function History() {
   let trends = [];
 
   try {
-    // Ambil session user untuk memastikan hanya data user tersebut yang diambil
     const session = await getServerSession(authOptions);
 
     if (session) {
       const userId = session.user.id;
-      const client = await connectToDB();
-      const db = client.db("SEOBoost");
-      const usersCollection = db.collection("users");
-
-      // Ambil history keywords dari database
-      const userHistory = await usersCollection.findOne(
-        { _id: new ObjectId(userId) },
-        { projection: { keywords: 1 } }
-      );
-
-      // Konversi data dari database ke dalam format `trends`
-      if (userHistory && userHistory.keywords) {
-        trends = userHistory.keywords
-          .map((keyword) => ({
-            title: { query: keyword.keyword },
-            accessedAt: keyword.accessedAt, // Simpan dalam bentuk asli untuk sorting
-          }))
-          .sort((a, b) => new Date(b.accessedAt) - new Date(a.accessedAt)) // Sorting dari terbaru ke terlama
-          .map((keyword) => ({
-            ...keyword,
-            accessedAt: new Intl.DateTimeFormat("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-            }).format(new Date(keyword.accessedAt)), // Format ulang untuk tampilan
-          }));
-      }
-
+      const keywords = await getUserHistory(userId);
+      trends = formatTrends(keywords);
     }
   } catch (error) {
     console.error("Error fetching trends from database:", error);
@@ -71,9 +42,7 @@ export default async function History() {
               <Link href={"/dashboard/trends/" + trend.title.query}>
                 <TrendsContainer
                   layoutId={trend.title.query}
-                  className={
-                    "px-4 py-6 hover:cursor-pointer flex flex-col justify-between"
-                  }
+                  className="px-4 py-6 hover:cursor-pointer flex flex-col justify-between"
                 >
                   <h2 className="text-white text-xl font-bold line-clamp-2 overflow-clip">
                     {trend.title.query}
