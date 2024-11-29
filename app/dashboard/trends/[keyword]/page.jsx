@@ -1,72 +1,50 @@
+// app/analyse/page.server.jsx
 "use server";
+
 import IndonesiaMap from "@/components/chart/indo-map";
 import NetworkGraph from "@/components/chart/network-graph";
 import Table from "@/components/chart/table";
 import { authOptions } from "@/lib/authOptions";
-import { connectToDB } from "@/lib/db";
+import { getServerSession } from "next-auth";
 import { convertToNodePairs } from "@/lib/utils/convertToNodePairs";
 import { countKeywords } from "@/lib/utils/countKeyword";
-import { ObjectId } from "mongodb";
-import { getServerSession } from "next-auth";
+import {
+  ensureUserExists,
+  updateKeywordHistory,
+} from "@/lib/services/userService";
 
-export default async function Page({ params }) {
+export default async function Analyse({ params }) {
   const keyword = decodeURIComponent(params.keyword);
-  let relatedKeyword = await fetch(
-    `${process.env.NEXT_PUBLIC_URL}/api/relatedQueries?keyword=${keyword}`,
-    { next: { revalidate: 300 } }
-  );
-  let keywordData = await relatedKeyword.json();
-  let getGeoMapData = await fetch(
-    `${process.env.NEXT_PUBLIC_URL}/api/googletrend/interest-by-region?keyword=${keyword}`,
-    { next: { revalidate: 300 } }
-  );
-  let geoMapDataFull = await getGeoMapData.json();
-  let geoMapData = geoMapDataFull.default.geoMapData;
+
+  const [relatedKeywordResponse, geoMapResponse] = await Promise.all([
+    fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/relatedQueries?keyword=${keyword}`,
+      { next: { revalidate: 300 } }
+    ),
+    fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/googletrend/interest-by-region?keyword=${keyword}`,
+      { next: { revalidate: 300 } }
+    ),
+  ]);
+
+  const keywordData = await relatedKeywordResponse.json();
+  const geoMapDataFull = await geoMapResponse.json();
+  const geoMapData = geoMapDataFull.default.geoMapData;
 
   const dataForNetworkGraph = convertToNodePairs(keywordData);
   const countKeywordDepth = countKeywords(keywordData);
 
   const session = await getServerSession(authOptions);
 
-  // Save history
   if (session) {
-    const userId = new ObjectId(session.user.id); // Pastikan userId menjadi ObjectId
-
-    const client = await connectToDB();
-    const db = client.db("SEOBoost");
-    const usersCollection = db.collection("users");
-
-    // Pastikan user dan struktur dokumen ada
-    await usersCollection.updateOne(
-      { _id: userId }, // Cari user berdasarkan ID
-      { $setOnInsert: { keywords: [] } }, // Jika user belum ada, buat dokumen baru dengan keywords kosong
-      { upsert: true } // Gunakan upsert untuk memastikan dokumen dibuat jika belum ada
-    );
-
-    // Cek apakah keyword sudah ada di dalam array keywords
-    const keywordExists = await usersCollection.findOne({
-      _id: userId,
-      "keywords.keyword": keyword,
-    });
-
-    if (keywordExists) {
-      // Jika keyword sudah ada, perbarui accessedAt
-      await usersCollection.updateOne(
-        { _id: userId, "keywords.keyword": keyword },
-        { $set: { "keywords.$.accessedAt": new Date() } }
-      );
-    } else {
-      // Jika keyword belum ada, tambahkan ke array keywords
-      await usersCollection.updateOne(
-        { _id: userId },
-        { $push: { keywords: { keyword, accessedAt: new Date() } } }
-      );
-    }
+    const userId = session.user.id;
+    await ensureUserExists(userId);
+    await updateKeywordHistory(userId, keyword);
   }
 
   return (
     <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-700 bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full overflow-auto">
-      <div className=" w-full flex flex-col gap-10">
+      <div className="w-full flex flex-col gap-10">
         <NetworkGraph
           data={dataForNetworkGraph}
           detail={countKeywordDepth}
@@ -75,7 +53,6 @@ export default async function Page({ params }) {
         <section className="h-[50vh] overflow-scroll relative">
           <Table data={countKeywordDepth} />
         </section>
-
         <section className="h-fit">
           <section className="flex gap-8 items-center justify-between h-[30rem] bg-[#2b2b2b] p-8 rounded-lg">
             <IndonesiaMap geoMapData={geoMapData} />
@@ -93,19 +70,17 @@ export default async function Page({ params }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {geoMapData.map((item, index) => {
-                      return (
-                        <tr
-                          id={item.id}
-                          key={item.id}
-                          className="border-b border-gray-600"
-                        >
-                          <td className="p-3">{index + 1}</td>
-                          <td className="p-3">{item.geoName}</td>
-                          <td className="p-3">{item.value}</td>
-                        </tr>
-                      );
-                    })}
+                    {geoMapData.map((item, index) => (
+                      <tr
+                        id={item.id}
+                        key={item.id}
+                        className="border-b border-gray-600"
+                      >
+                        <td className="p-3">{index + 1}</td>
+                        <td className="p-3">{item.geoName}</td>
+                        <td className="p-3">{item.value}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
