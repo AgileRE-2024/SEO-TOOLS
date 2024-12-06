@@ -75,9 +75,9 @@ export default async function History() {
             </li>
           ))}
         </ul>
-        <p data-testid="no-history-message" className="text-custom-teal block">
+        {/* <p data-testid="no-history-message" className="text-custom-teal block">
           p
-        </p>
+        </p> */}
       </article>
     </div>
   );
