@@ -19,6 +19,7 @@ export default function TrendsInput({ className }) {
       onSubmit={handleSearch}
       layoutId="trendsinput"
       className={className}
+      data-testid="input-form"
     >
       <input
         type="text"
@@ -27,8 +28,9 @@ export default function TrendsInput({ className }) {
         placeholder="Explore Hot Trendings..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        data-testid="keyword-input"
       />
-      <button type="submit" aria-label="Search">
+      <button type="submit" aria-label="Search" data-testid="search-button">
         <IconSearch
           stroke={2}
           className="absolute right-4 top-2 bottom-0 text-neutral-400"

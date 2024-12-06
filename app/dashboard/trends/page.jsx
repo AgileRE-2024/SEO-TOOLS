@@ -29,10 +29,16 @@ export default async function Dashboard() {
             className={"relative w-[40%] max-w-[35rem] flex  items-center "}
           />
         </div>
-        <ul className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 mt-2 w-fit mx-auto">
+        <ul
+          className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 mt-2 w-fit mx-auto"
+          data-testid="trending-keywords-list"
+        >
           {trends.map((trend) => {
             return (
-              <li key={trend.title.query}>
+              <li
+                key={trend.title.query}
+                data-testid={`keyword-${trend.title.query}`}
+              >
                 <Link href={"/dashboard/trends/" + trend.title.query}>
                   <TrendsContainer
                     layoutId={trend.title.query}

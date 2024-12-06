@@ -6,6 +6,7 @@ const FormInput = ({
   placeholder,
   isError,
   errorMessage,
+  ...props
 }) => {
   const isPassword = type === "password";
   const [isHidden, setIsHidden] = useState(true);
@@ -40,10 +41,16 @@ const FormInput = ({
           className={`block w-full px-4 py-2 rounded-lg bg-transparent border border-teal-50 text-white focus:outline-none focus:border-custom-teal ${
             isError && "text-red-400 border-red-400"
           }`}
+          {...props}
         />
       </div>
       {isError && (
-        <p className="text-xs text-red-400 text-left  p-1">{errorMessage}</p>
+        <p
+          className="text-xs text-red-400 text-left  p-1"
+          data-testid="error-message"
+        >
+          {errorMessage}
+        </p>
       )}
     </motion.div>
   );

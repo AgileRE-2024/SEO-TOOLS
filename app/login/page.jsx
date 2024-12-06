@@ -1,6 +1,6 @@
 // src/components/LoginForm.js
 
-"use client"
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "nextjs-toploader/app";
@@ -61,12 +61,14 @@ const LoginForm = () => {
           name: "email",
           type: "email",
           placeholder: "example@example.com",
+          "data-testid": "email-input",
         },
         {
           id: "password",
           name: "password",
           type: "password",
           placeholder: "••••••••",
+          "data-testid": "password-input",
         },
       ]}
       errorMessage={errorMessage}

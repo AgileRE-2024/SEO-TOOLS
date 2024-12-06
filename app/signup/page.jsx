@@ -79,24 +79,28 @@ const SignUpForm = () => {
           name: "userName",
           type: "text",
           placeholder: "User name",
+          "data-testid": "name-input",
         },
         {
           id: "email",
           name: "email",
           type: "email",
           placeholder: "example@example.com",
+          "data-testid": "email-input",
         },
         {
           id: "password",
           name: "password",
           type: "password",
           placeholder: "••••••••",
+          "data-testid": "password-input",
         },
         {
           id: "confirmPassword",
           name: "confirmPassword",
           type: "password",
           placeholder: "••••••••",
+          "data-testid": "confirm-input",
         },
       ]}
       errorMessage={errorMessage}

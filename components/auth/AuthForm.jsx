@@ -34,6 +34,7 @@ const AuthForm = ({
             classes="w-full font-bold"
             layoutId="auth-button"
             disabled={isLoading}
+            data-testid="submit"
           >
             {isLoading ? "Loading..." : buttonText}
           </MainButton>

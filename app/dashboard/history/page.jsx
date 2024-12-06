@@ -36,7 +36,15 @@ export default async function History() {
             className={"relative w-[40%] max-w-[35rem] flex items-center"}
           />
         </div>
-        <ul className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 mt-2 w-fit mx-auto">
+        <ul
+          className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 mt-2 w-fit mx-auto"
+          data-testid="search-history-list"
+        >
+          {trends.length < 1 && (
+            <p data-testid="no-history-message" className="text-custom-teal">
+              No history available...
+            </p>
+          )}
           {trends.map((trend) => (
             <li key={trend.title.query}>
               <Link href={"/dashboard/trends/" + trend.title.query}>
@@ -54,7 +62,10 @@ export default async function History() {
                       <span className="text-white opacity-50 text-xs">
                         Accessed at
                       </span>
-                      <p className="text-custom-darkTeal font-bold text-base">
+                      <p
+                        className="text-custom-darkTeal font-bold text-base"
+                        data-testid="time-accessed"
+                      >
                         {trend.accessedAt}
                       </p>
                     </section>
@@ -64,6 +75,9 @@ export default async function History() {
             </li>
           ))}
         </ul>
+        <p data-testid="no-history-message" className="text-custom-teal block">
+          p
+        </p>
       </article>
     </div>
   );

@@ -30,13 +30,6 @@ export default function DashboardSideBar() {
         <IconAnalyzeFilled className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-    {
-      label: "History",
-      href: "/dashboard/history",
-      icon: (
-        <IconHistory className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
   ];
   const [open, setOpen] = useState(false);
 
@@ -60,6 +53,22 @@ export default function DashboardSideBar() {
                 }
               />
             ))}
+            <SidebarLink
+              key={"history"}
+              link={{
+                label: "History",
+                href: "/dashboard/history",
+                icon: (
+                  <IconHistory className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                ),
+              }}
+              className={
+                path.match("/dashboard/history")
+                  ? "bg-neutral-700 px-1"
+                  : "" + " px-1"
+              }
+              data-testid="history-section"
+            />
             {session && (
               <SidebarItem
                 onClick={() => signOut()}
@@ -82,7 +91,10 @@ export default function DashboardSideBar() {
                 label: `${session.user.name}`,
                 href: "#",
                 icon: (
-                  <IconUserFilled color="green" className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+                  <IconUserFilled
+                    color="green"
+                    className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0"
+                  />
                 ),
               }}
             />
