@@ -15,9 +15,8 @@ SEOBoost is a web application designed to help users analyze keywords, track key
 ## Tech Stack
 
 - **Next.js**: Used for building the frontend and backend of the application.
-- **App Router**: For routing and organizing API endpoints.
 - **MongoDB**: For storing user data, search history, and keyword analysis results.
-- **Google Trends API**: To fetch real-time data about trending keywords.
+- **Google Trends**: To fetch real-time data about trending keywords.
 
 ## Installation
 
