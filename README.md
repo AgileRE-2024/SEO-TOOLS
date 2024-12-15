@@ -72,6 +72,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 - [Next.js](https://nextjs.org/)
 - [MongoDB](https://www.mongodb.com/)
-- [Google Trends API](https://trends.google.com/trends/?geo=US)
+- [Google Trends](https://trends.google.com/trends/?geo=ID)
 
 ---
