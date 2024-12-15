@@ -10,7 +10,7 @@ SEOBoost is a web application designed to help users analyze keywords, track key
   
 - **Keyword Research**: Users can input a keyword or phrase to be analyzed. The system pulls data from multiple sources to provide details about search volume, competition level, and keyword relevance.
 
-- **SEO Analysis**: After selecting a keyword, users can receive content optimization recommendations. The tool suggests how the keyword should be used within text and provides related keywords or queries that are highly relevant and frequently searched by users.
+- **SEO Analysis**: After selecting a keyword, The tool  provides related keywords or queries that are highly relevant and frequently searched by users.
 
 ## Tech Stack
 
@@ -54,15 +54,6 @@ SEOBoost is a web application designed to help users analyze keywords, track key
 - **Login**: Users must log in to access the keyword analysis features. Use your credentials to sign in.
 - **Keyword Trend Display**: After logging in, the app will show a list of the top trending keywords, sourced from Google Trends.
 - **Keyword Analysis**: Input a keyword or phrase into the search bar to begin analysis. The app will provide details about the keyword’s search volume, competition, and relevance.
-- **SEO Recommendations**: After the analysis, SEOBoost will give you recommendations on how to optimize your content, including the use of related keywords and queries.
-
-## Contributing
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-name`).
-3. Commit your changes (`git commit -am 'Add new feature'`).
-4. Push to the branch (`git push origin feature-name`).
-5. Open a pull request.
 
 ## License
 
