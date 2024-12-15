@@ -39,7 +39,6 @@ SEOBoost is a web application designed to help users analyze keywords, track key
 4. Edit `.env.local` and provide the necessary values:
    ```
    MONGODB_URI=your_mongodb_connection_string
-   GOOGLE_TRENDS_API_KEY=your_google_trends_api_key
    NEXT_PUBLIC_BASE_URL=http://localhost:3000
    ```
 
