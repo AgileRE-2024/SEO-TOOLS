@@ -22,7 +22,7 @@ SEOBoost is a web application designed to help users analyze keywords, track key
 
 1. Clone this repository to your local machine:
    ```bash
-   git clone https://github.com/yourusername/SEOBoost.git
+   git clone https://github.com/AgileRE-2024/SEO-TOOLS.git
    ```
 
 2. Install dependencies:
