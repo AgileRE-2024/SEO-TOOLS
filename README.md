@@ -4,6 +4,10 @@
 
 SEOBoost is a web application designed to help users analyze keywords, track keyword trends, and get SEO recommendations. The app allows users to input a keyword or phrase and provides detailed insights into search volume, competition, and SEO optimization techniques.
 
+## Software Requirements Specification
+
+https://drive.google.com/file/d/1mlBZGA6k_JZKBNlLEklzcpPoR8g1xfpe/view?usp=sharing 
+
 ## Features
 
 - **Trending Keywords**: Once logged in, the system displays the top trending keywords based on Google Trends. These are the most searched keywords in various regions.
